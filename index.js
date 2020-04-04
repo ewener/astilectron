@@ -2,7 +2,7 @@
 'use strict'
 
 const electron = require('electron')
-const {app, BrowserWindow, ipcMain, Menu, MenuItem, Tray, dialog, Notification} = electron
+const {app, BrowserWindow, BrowserView, ipcMain, Menu, MenuItem, Tray, dialog, Notification} = electron
 const consts = require('./src/consts.js')
 const client = require('./src/client.js')
 const readline = require('readline')
@@ -53,6 +53,7 @@ function onReady () {
     });
 
     // Read from client
+    // nodejs 从客户端读取一行
     rl.on('line', function(line){
         // Parse the JSON
         let json = JSON.parse(line)
@@ -384,7 +385,21 @@ function windowCreate(json) {
         json.windowOptions.webPreferences = {}
     }
     json.windowOptions.webPreferences.nodeIntegration = true
+    json.windowOptions.show = false
     elements[json.targetID] = new BrowserWindow(json.windowOptions)
+    // 创建遮罩
+    let view = new BrowserView()
+    elements[json.targetID].setBrowserView(view)
+    view.setBounds({ x: json.windowOptions.x, y: json.windowOptions.y, height: json.windowOptions.height, width: json.windowOptions.width })
+    view.webContents.loadFile(json.windowOptions.loadingHtml)
+    // 资源加载前，展示主窗口
+    view.webContents.on('dom-ready', () => {
+        elements[json.targetID].show()
+    })
+    // 加载完成移除遮罩
+    ipcMain.on('stop-loading-main', () => {
+        elements[json.targetID].removeBrowserView(view)
+    })
     if (typeof json.windowOptions.proxy !== "undefined") {
         elements[json.targetID].webContents.session.setProxy(json.windowOptions.proxy)
             .then(() => windowCreateFinish(json))
