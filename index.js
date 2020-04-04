@@ -389,19 +389,9 @@ function windowCreate(json) {
     elements[json.targetID] = new BrowserWindow(json.windowOptions)
     // 创建遮罩
     let view = new BrowserView()
-    let bounds = {}
     elements[json.targetID].setBrowserView(view)
-    if (json.windowOptions.x) {
-        bounds.x = json.windowOptions.x
-    }
-    if (json.windowOptions.y) {
-        bounds.y = json.windowOptions.y
-    }
-    bounds.height = 300
-    bounds.width = 400
 
-    view.setBounds(bounds)
-    loading.gif
+    view.setBounds({ x: 0, y: 0, width: 400, height: 300 })
     view.webContents.loadFile('loading.gif')
     // 资源加载前，展示主窗口
     view.webContents.on('dom-ready', () => {
