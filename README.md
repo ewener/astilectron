@@ -1,3 +1,15 @@
+How to use loading effect？
+* `WindowOptions.WebPreferences.Preload`
+```js
+let { ipcRenderer } = require('electron')
+window.stopLoading = function() {
+    ipcRenderer.send('stop-loading-main')
+}
+```
+* `mounted`
+```js
+window.stopLoading()
+```
 `astilectron` is an Electron app that provides an API over a TCP socket that allows executing Electron's method as well as capturing Electron's events.
 
 # Architecture
