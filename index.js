@@ -390,7 +390,7 @@ function windowCreate(json) {
     // 创建遮罩
     let view = new BrowserView()
     elements[json.targetID].setBrowserView(view)
-    view.setBounds(elements[json.targetID].bounds)
+    view.setBounds({ x: 0, y: 0, width: json.windowOptions.width, height: json.windowOptions.height })
     view.webContents.loadFile('loading.html')
     // 资源加载前，展示主窗口
     view.webContents.on('dom-ready', () => {
